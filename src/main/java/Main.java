@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.text.DecimalFormat;
 
 public class Main {
 
@@ -10,13 +11,21 @@ public class Main {
         List<String> items = new ArrayList<>();
         List<Double> prices = new ArrayList<>();
 
-        System.out.print("Здравствуйте! Сколько людей откушало?: ");
+        System.out.println("Здравствуйте! Сколько гостей присутствовало?: ");
+        while (!scanner.hasNextInt()) {
+            scanner.next();
+            System.out.println("Ошибка! Введите положительное целое число: ");
+        }
         int number = scanner.nextInt();
         while (number <= 1) {
             if (number == 1) {
-                System.out.println("Введите число больше 1: ");
+                System.out.println("Ошибка! Введите число больше 1: ");
             } else {
-                System.out.println("Вы ввели число меньше 1. Введите количество гостей: ");
+                System.out.println("Ошибка! Вы ввели число меньше 1. Введите количество гостей: ");
+            }
+            while (!scanner.hasNextInt()) {
+                scanner.next();
+                System.out.println("Ошибка! Введите положительное целое число: ");
             }
             number = scanner.nextInt();
         }
@@ -27,7 +36,7 @@ public class Main {
         double total = 0.0;
         boolean continueAddingItems = true;
         while (continueAddingItems) {
-            System.out.print("Введите название товара (для завершения введите 'Завершить'): ");
+            System.out.println("Введите название товара (для завершения введите 'Завершить'): ");
             String itemName = scanner.nextLine();
 
             if (itemName.equalsIgnoreCase("Завершить")) {
@@ -38,10 +47,10 @@ public class Main {
             } else {
                 items.add(itemName);
 
-                System.out.print("Вы успешно добавили товар. \nВведите цену товара с копейками (например, 07.50, 10.05): ");
+                System.out.println("Вы успешно добавили товар. \nВведите цену товара с копейками (например, 07.50, 10.05): ");
                 String priceString = scanner.nextLine();
 
-                if (!priceString.matches("\\d+(\\.\\d{2})?")) {
+                if (!priceString.matches("\\d+(\\.\\d{2})")) {
                     System.out.println("Ошибка! Стоимость нужно ввести с копейками (например, 07.50, 10.05). Начнём заново ");
                     continue;
                 }
@@ -58,9 +67,37 @@ public class Main {
             System.out.println(items.get(i) + ": " + prices.get(i));
         }
 
-        System.out.println("\nОбщая стоимость товаров: " + String.format("%.2f", total));
+
+
+        System.out.println("\nОбщая стоимость товаров: " + formatRubles(total));
         double paymentPerGuest = total / number;
 
-        System.out.println("Каждый гость должен заплатить: " + String.format("%.2f", paymentPerGuest));
+        System.out.println("Каждый гость должен заплатить: " + formatRubles(paymentPerGuest));
+    }
+
+    public static String formatRubles(double amount) {
+        DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+        String amountStr = decimalFormat.format(amount);
+
+        int rubles = (int) amount;
+        int lastTwoDigits = rubles % 100;
+
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
+            return amountStr + " рублей";
+        }
+
+        int lastDigit = lastTwoDigits % 10;
+
+        String rublesStr;
+
+        if (lastDigit == 1) {
+            rublesStr = amountStr + " рубль";
+        } else if (lastDigit >= 2 && lastDigit <= 4) {
+            rublesStr = amountStr + " рубля";
+        } else {
+            rublesStr = amountStr + " рублей";
+        }
+
+        return rublesStr;
     }
 }
